@@ -1,78 +1,36 @@
-# React + TypeScript + Vite
+# Playground — Ideas in motion
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite로 만드는 프론트엔드 실험실입니다.
 
-Currently, two official plugins are available:
+## 실행
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+`pnpm build`로 프로덕션 빌드, `pnpm lint`로 정적 검사를 실행합니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 실험 추가
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+`src/data/experiments.ts`가 홈 목록과 라우트의 공통 등록부입니다.
 
-```
+1. `src/pages/`에 실험 페이지를 만들고 컴포넌트를 default export 합니다.
+2. 등록부에 고유 `id`, 제목, 설명, 분류, 태그, 날짜, 프리뷰 종류를 추가합니다.
+3. 공개할 실험은 `status: 'live'`, `path`, `page: lazy(() => import('../pages/YourExperiment'))`를 지정합니다. 준비 중인 아이디어는 `status: 'planned'`로 등록하며 페이지 경로가 필요 없습니다.
+4. 대표 실험은 `featured: 1`처럼 순서를 지정합니다. 최대 세 개가 표시됩니다.
+
+사용 가능한 프리뷰는 `threads`, `grid`, `memo`, `chunks`입니다. 새 시각화는 `src/components/Home/ExperimentPreview.tsx`에서 확장할 수 있습니다. 홈의 프리뷰는 원리 설명용이며 실제 성능 측정은 개별 실험에서 진행합니다.
+
+분류는 `categories`에 정의합니다. 목록은 제목·설명·태그 검색, 분류, 날짜 정렬, 12개 단위 더 보기를 지원합니다. 검색 조건은 URL에 저장하며 실험에서 돌아올 때 탐색 위치를 복원합니다.
+
+## 구성
+
+- `src/pages/Home/`: 히어로, 대표 실험, 아카이브, 소개
+- `src/components/Home/Sculpture.tsx`: Canvas 기반 입체 점 조형물. 포인터 주변 입자 반발, 드래그 회전과 관성, 클릭 파동, Knot·Orbit·Wave 형태 전환을 지원합니다. 방향키로도 회전할 수 있으며, 화면 밖과 비활성 탭에서는 렌더링을 멈춥니다.
+- `src/components/Home/ExperimentPreview.tsx`: 실험별 개념 프리뷰. Web Worker 작업량 슬라이더와 스위치로 작업 정체와 분산 흐름을 비교합니다.
+- `src/components/Home/PageMotion.tsx`: 스크롤 진행 표시와 섹션 진입 효과
+- `src/data/experiments.ts`: 실험 메타데이터와 지연 로딩 페이지 등록
+- `src/App.tsx`: 등록된 실험의 라우팅과 홈 복귀
+
+홈 스타일은 `.playground` 아래에 한정합니다. 모바일 레이아웃, 키보드 포커스, `prefers-reduced-motion`을 지원합니다. 실험 페이지 코드는 각 경로 진입 시 불러옵니다.
