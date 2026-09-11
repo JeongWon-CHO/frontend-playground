@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Sculpture from "../../components/Home/Sculpture";
 import PageMotion from "../../components/Home/PageMotion";
+import LivingBackdrop from "../../components/Home/LivingBackdrop";
+import SignalPlayground from "../../components/Home/SignalPlayground";
+import ExperimentBench from "../../components/Home/ExperimentBench";
+import CuriosityPlayground from "../../components/Home/CuriosityPlayground";
+import SectionNavigation from "../../components/Home/SectionNavigation";
 import ExperimentPreview from "../../components/Home/ExperimentPreview";
 import { categories, experiments } from "../../data/experiments";
 import "./Home.css";
+import { rememberHomeScroll, restoreHomeScroll } from "./scrollPosition";
 const github = "https://github.com/JeongWon-CHO/frontend-playground";
 const featured = experiments
   .filter((e) => e.status === "live" && e.featured !== undefined)
@@ -47,21 +53,19 @@ export default function Home() {
     if (key !== "limit") next.delete("limit");
     setParams(next, { replace: true });
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.title = "Playground — Ideas in motion";
-    const saved = sessionStorage.getItem("playground-scroll");
-    const frame = requestAnimationFrame(() => {
-      if (saved && !location.hash) window.scrollTo(0, Number(saved));
-    });
-    return () => cancelAnimationFrame(frame);
+    restoreHomeScroll();
   }, []);
   const remember = () => {
-    sessionStorage.setItem("playground-scroll", String(window.scrollY));
+    rememberHomeScroll();
     sessionStorage.setItem("playground-search", params.toString());
   };
   return (
     <div className="playground" id="top">
+      <LivingBackdrop />
       <PageMotion />
+      <SectionNavigation />
       <a className="skip-link" href="#experiments">
         실험 목록으로 건너뛰기
       </a>
@@ -138,11 +142,15 @@ export default function Home() {
                   </span>
                   <span>FIG. {feature.id}</span>
                 </div>
-                <ExperimentPreview
-                  kind={feature.preview}
-                  split={split}
-                  load={load}
-                />
+                {feature.preview === "threads" ? (
+                  <SignalPlayground split={split} load={load} />
+                ) : (
+                  <ExperimentPreview
+                    kind={feature.preview}
+                    split={split}
+                    load={load}
+                  />
+                )}
                 {feature.preview === "threads" && (
                   <div className="workload-control">
                     <label htmlFor="preview-workload">
@@ -352,7 +360,7 @@ export default function Home() {
                     <span>EXPERIMENT / {active.id}</span>
                     <span>↗</span>
                   </div>
-                  <ExperimentPreview key={active.id} kind={active.preview} />
+                  <ExperimentBench key={active.id} kind={active.preview} />
                   <div
                     className="preview-description"
                     key={`description-${active.id}`}
@@ -414,6 +422,7 @@ export default function Home() {
               </a>
             </div>
           </div>
+          <CuriosityPlayground />
         </section>
       </main>
       <footer className="site-footer shell mono">

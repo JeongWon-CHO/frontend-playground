@@ -147,25 +147,6 @@ export default function Sculpture() {
         p.glow = Math.max(influence, ripple, i % 120 < 7 ? 0.6 : 0);
       }
       sorted.sort((a, b) => a.depth - b.depth);
-      if (state.inside && !still) {
-        const gradient = ctx.createRadialGradient(
-          state.x,
-          state.y,
-          0,
-          state.x,
-          state.y,
-          145,
-        );
-        gradient.addColorStop(0, "#c9f76a13");
-        gradient.addColorStop(1, "#c9f76a00");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-        ctx.strokeStyle = "#c9f76a60";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(state.x, state.y, state.down ? 17 : 8, 0, Math.PI * 2);
-        ctx.stroke();
-      }
       if (state.pulse >= 0 && !still) {
         ctx.strokeStyle = `rgba(201,247,106,${Math.max(0, 0.5 - state.pulse / width)})`;
         ctx.beginPath();
