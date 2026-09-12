@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import { useRef, useState } from "react";
 
 const labels = ["What if?", "Build.", "Break.", "Learn.", "Repeat."];
@@ -36,7 +37,7 @@ export default function CuriosityPlayground() {
             )
           }
         >
-          Remix the idea ↗
+          Remix the idea <Icon />
         </button>
       </div>
       <div
@@ -129,7 +130,9 @@ export default function CuriosityPlayground() {
       </div>
       <div className="curiosity-footer">
         <span>단어를 끌어 나만의 연결을 만들어보세요.</span>
-        <button onClick={() => setPositions(initial)}>Reset ↺</button>
+        <button onClick={() => setPositions(initial)}>
+          Reset <Icon name="reset" />
+        </button>
       </div>
     </div>
   );

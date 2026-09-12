@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import { useEffect, useRef, useState } from "react";
 
 export default function SignalPlayground({
@@ -70,7 +71,8 @@ export default function SignalPlayground({
         <span className="signal-instruction">
           {tasks.length >= 24
             ? "처리 중 · 잠깐 기다려주세요"
-            : "클릭해서 작업을 보내보세요 ↗"}
+            : "클릭해서 작업을 보내보세요"}{" "}
+          {tasks.length < 24 && <Icon />}
         </span>
       </button>
       <div className="signal-stats mono" aria-live="polite">

@@ -2234,3 +2234,26 @@ html:has(.playground) body {
     transition: none !important;
   }
 }
+
+/* Shared vector icons inherit their control's color and typographic scale. */
+.playground .ui-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.circle-arrow .ui-icon {
+  width: 20px;
+  height: 20px;
+}
+.sculpture-controls .burst-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sculpture-controls .burst-button > .ui-icon {
+  width: 20px;
+  height: 20px;
+}

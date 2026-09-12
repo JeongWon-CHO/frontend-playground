@@ -1,3 +1,4 @@
+import Icon from "../../components/Home/Icon";
 import { useLayoutEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Sculpture from "../../components/Home/Sculpture";
@@ -11,7 +12,10 @@ import ExperimentPreview from "../../components/Home/ExperimentPreview";
 import { categories, experiments } from "../../data/experiments";
 import "./Home.css";
 import { rememberHomeScroll, restoreHomeScroll } from "./scrollPosition";
+
 const github = "https://github.com/JeongWon-CHO/frontend-playground";
+const githubMain = "https://github.com/JeongWon-CHO";
+
 const featured = experiments
   .filter((e) => e.status === "live" && e.featured !== undefined)
   .sort(
@@ -80,8 +84,8 @@ export default function Home() {
             <span>{String(experiments.length).padStart(2, "0")}</span>
           </a>
           <a href="#about">About</a>
-          <a href={github} target="_blank" rel="noreferrer">
-            GitHub ↗
+          <a href={githubMain} target="_blank" rel="noreferrer">
+            GitHub <Icon />
           </a>
         </nav>
         <span className="header-note mono">
@@ -107,7 +111,10 @@ export default function Home() {
                 만들고, 부수고, 다시 발견하는 작은 실험실.
               </p>
               <a className="explore-link" href="#experiments">
-                <span className="circle-arrow">↓</span> Explore the experiments
+                <span className="circle-arrow">
+                  <Icon name="arrow-down" />
+                </span>{" "}
+                Explore the experiments
               </a>
             </div>
             <Sculpture />
@@ -115,9 +122,14 @@ export default function Home() {
           <div className="hero-bottom mono">
             <span>CODE. PLAY. DISCOVER. REPEAT.</span>
             <span>
-              SCROLL TO DISCOVER <span className="lime">↓</span>
+              SCROLL TO DISCOVER{" "}
+              <span className="lime">
+                <Icon name="arrow-down" />
+              </span>
             </span>
-            <span>BASED IN CURIOSITY ↗</span>
+            <span>
+              BASED IN CURIOSITY <Icon />
+            </span>
           </div>
         </section>
         {feature && (
@@ -205,7 +217,10 @@ export default function Home() {
                     to={feature.path}
                     onClick={remember}
                   >
-                    실험 시작하기 <span>↗</span>
+                    실험 시작하기{" "}
+                    <span>
+                      <Icon />
+                    </span>
                   </Link>
                 )}
                 <span className="feature-footnote mono">
@@ -320,7 +335,7 @@ export default function Home() {
                   <span className={`row-status mono ${e.status}`}>
                     {e.status === "live" ? (
                       <>
-                        <i /> LIVE ↗
+                        <i /> LIVE <Icon />
                       </>
                     ) : (
                       "COMING SOON"
@@ -333,7 +348,7 @@ export default function Home() {
                   <span>아직 이곳은 미지의 영역.</span>
                   <p>다른 검색어나 분류로 실험을 찾아보세요.</p>
                   <button onClick={() => setParams({}, { replace: true })}>
-                    전체 실험 보기 ↗
+                    전체 실험 보기 <Icon />
                   </button>
                 </div>
               )}
@@ -350,7 +365,9 @@ export default function Home() {
                   <i className="status-dot" />{" "}
                   {experiments.filter((e) => e.status === "live").length} LIVE
                 </span>
-                <span>MORE IDEAS ARE ON THE WAY ↗</span>
+                <span>
+                  MORE IDEAS ARE ON THE WAY <Icon />
+                </span>
               </div>
             </div>
             <aside className="archive-preview" aria-label="선택한 실험 프리뷰">
@@ -358,7 +375,9 @@ export default function Home() {
                 <>
                   <div className="preview-label mono">
                     <span>EXPERIMENT / {active.id}</span>
-                    <span>↗</span>
+                    <span>
+                      <Icon />
+                    </span>
                   </div>
                   <ExperimentBench key={active.id} kind={active.preview} />
                   <div
@@ -397,7 +416,9 @@ export default function Home() {
               Curious
               <br />
               by <em>default.</em>
-              <span className="lime">↗</span>
+              <span className="lime">
+                <Icon />
+              </span>
             </h2>
             <div>
               <p>
@@ -418,7 +439,7 @@ export default function Home() {
                 rel="noreferrer"
                 className="text-link"
               >
-                Follow the exploration on GitHub ↗
+                Follow the exploration on GitHub <Icon />
               </a>
             </div>
           </div>
@@ -428,7 +449,9 @@ export default function Home() {
       <footer className="site-footer shell mono">
         <span>© {new Date().getFullYear()} PLAYGROUND</span>
         <span>A LITTLE CURIOUS. ALWAYS BUILDING.</span>
-        <a href="#top">BACK TO TOP ↑</a>
+        <a href="#top">
+          BACK TO TOP <Icon name="arrow-up" />
+        </a>
       </footer>
     </div>
   );

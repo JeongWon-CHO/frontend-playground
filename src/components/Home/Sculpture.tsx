@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import { useEffect, useRef, useState } from "react";
 
 const forms = ["Knot", "Orbit", "Wave"] as const;
@@ -325,7 +326,7 @@ export default function Sculpture() {
           onClick={pulse}
           aria-label="입자 파동 보내기"
         >
-          ↗ <span>Send a wave</span>
+          <Icon /> <span>Send a wave</span>
         </button>
       </div>
     </div>

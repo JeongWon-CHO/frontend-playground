@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import { useState } from "react";
 import SignalPlayground from "./SignalPlayground";
 
@@ -21,7 +22,10 @@ export default function ExperimentBench({ kind }: { kind: string }) {
           aria-pressed={split}
           onClick={() => setSplit(!split)}
         >
-          Web Worker {split ? "ON" : "OFF"} <span>⇄</span>
+          Web Worker {split ? "ON" : "OFF"}{" "}
+          <span>
+            <Icon name="swap" />
+          </span>
         </button>
       </div>
     );
@@ -29,7 +33,9 @@ export default function ExperimentBench({ kind }: { kind: string }) {
     <div className={`experiment-bench bench-${kind}`}>
       <div className="bench-heading mono">
         {kind === "chunks" ? "PULL THE BUNDLE APART" : "TOUCH THE COMPONENTS"}
-        <span>↙</span>
+        <span>
+          <Icon name="arrow-down-left" />
+        </span>
       </div>
       <div
         className="bench-grid"
@@ -78,7 +84,7 @@ export default function ExperimentBench({ kind }: { kind: string }) {
               setRenders(0);
             }}
           >
-            Reset ↺
+            Reset <Icon name="reset" />
           </button>
         </div>
       )}
@@ -88,7 +94,7 @@ export default function ExperimentBench({ kind }: { kind: string }) {
           aria-pressed={memo}
           onClick={() => setMemo(!memo)}
         >
-          Memo {memo ? "ON" : "OFF"} ⇄
+          Memo {memo ? "ON" : "OFF"} <Icon name="swap" />
         </button>
       )}
       <p className="bench-note">
