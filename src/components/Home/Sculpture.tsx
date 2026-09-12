@@ -1,4 +1,4 @@
-import Icon from "./Icon";
+import Icon from "@/components/Home/Icon";
 import { useEffect, useRef, useState } from "react";
 
 const forms = ["Knot", "Orbit", "Wave"] as const;

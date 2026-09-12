@@ -1,17 +1,20 @@
-import Icon from "../../components/Home/Icon";
+import Icon from "@/components/Home/Icon";
 import { useLayoutEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import Sculpture from "../../components/Home/Sculpture";
-import PageMotion from "../../components/Home/PageMotion";
-import LivingBackdrop from "../../components/Home/LivingBackdrop";
-import SignalPlayground from "../../components/Home/SignalPlayground";
-import ExperimentBench from "../../components/Home/ExperimentBench";
-import CuriosityPlayground from "../../components/Home/CuriosityPlayground";
-import SectionNavigation from "../../components/Home/SectionNavigation";
-import ExperimentPreview from "../../components/Home/ExperimentPreview";
-import { categories, experiments } from "../../data/experiments";
-import "./Home.css";
-import { rememberHomeScroll, restoreHomeScroll } from "./scrollPosition";
+import Sculpture from "@/components/Home/Sculpture";
+import PageMotion from "@/components/Home/PageMotion";
+import LivingBackdrop from "@/components/Home/LivingBackdrop";
+import SignalPlayground from "@/components/Home/SignalPlayground";
+import ExperimentBench from "@/components/Home/ExperimentBench";
+import CuriosityPlayground from "@/components/Home/CuriosityPlayground";
+import SectionNavigation from "@/components/Home/SectionNavigation";
+import ExperimentPreview from "@/components/Home/ExperimentPreview";
+import { categories, experiments } from "@/data/experiments";
+import "@/pages/Home/Home.css";
+import {
+  rememberHomeScroll,
+  restoreHomeScroll,
+} from "@/pages/Home/scrollPosition";
 
 const github = "https://github.com/JeongWon-CHO/frontend-playground";
 const githubMain = "https://github.com/JeongWon-CHO";

@@ -1,4 +1,4 @@
-import Icon from "./Icon";
+import Icon from "@/components/Home/Icon";
 import { useEffect, useRef, useState } from "react";
 
 export default function SignalPlayground({

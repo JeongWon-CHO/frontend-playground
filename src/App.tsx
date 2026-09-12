@@ -1,8 +1,8 @@
 import { Suspense, useEffect } from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import { experiments } from "./data/experiments";
-import "./App.css";
+import Home from "@/pages/Home";
+import { experiments } from "@/data/experiments";
+import "@/App.css";
 function ExperimentPage({
   experiment,
 }: {

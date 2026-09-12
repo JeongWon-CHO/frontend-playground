@@ -17,7 +17,7 @@ pnpm dev
 
 1. `src/pages/`에 실험 페이지를 만들고 컴포넌트를 default export 합니다.
 2. 등록부에 고유 `id`, 제목, 설명, 분류, 태그, 날짜, 프리뷰 종류를 추가합니다.
-3. 공개할 실험은 `status: 'live'`, `path`, `page: lazy(() => import('../pages/YourExperiment'))`를 지정합니다. 준비 중인 아이디어는 `status: 'planned'`로 등록하며 페이지 경로가 필요 없습니다.
+3. 공개할 실험은 `status: 'live'`, `path`, `page: lazy(() => import('@/pages/YourExperiment'))`를 지정합니다. 준비 중인 아이디어는 `status: 'planned'`로 등록하며 페이지 경로가 필요 없습니다.
 4. 대표 실험은 `featured: 1`처럼 순서를 지정합니다. 최대 세 개가 표시됩니다.
 
 사용 가능한 프리뷰는 `threads`, `grid`, `memo`, `chunks`입니다. 새 시각화는 `src/components/Home/ExperimentPreview.tsx`에서 확장할 수 있습니다. 홈의 프리뷰는 원리 설명용이며 실제 성능 측정은 개별 실험에서 진행합니다.
@@ -49,3 +49,15 @@ pnpm dev
 - `CuriosityPlayground`: 소개 영역의 단어 연결을 드래그·방향키로 변경하고 Remix 또는 Reset으로 재배치합니다. 터치 드래그는 단어 버튼 안에서만 처리합니다.
 
 공유 배경은 비활성 탭에서 렌더링을 중지하며, 움직임 줄이기 설정에서는 정적인 배경과 직접 조작만 유지합니다.
+
+## 소스 경로
+
+`@/`는 `src/`를 가리킵니다. 컴포넌트, CSS, 지연 로딩 import 모두 같은 별칭을 사용합니다.
+
+```tsx
+import Home from '@/pages/Home';
+import Icon from '@/components/Home/Icon';
+import '@/pages/Home/Home.css';
+```
+
+Vite의 `resolve.alias`와 `tsconfig.app.json`의 `paths`에 함께 설정되어 있어 개발 서버, 빌드, 타입 검사와 에디터에서 동일하게 해석합니다. Worker는 `@/components/WebWorker/prime.worker.ts?worker`로 가져옵니다.

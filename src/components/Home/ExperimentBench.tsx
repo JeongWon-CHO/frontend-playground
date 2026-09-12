@@ -1,6 +1,6 @@
-import Icon from "./Icon";
+import Icon from "@/components/Home/Icon";
 import { useState } from "react";
-import SignalPlayground from "./SignalPlayground";
+import SignalPlayground from "@/components/Home/SignalPlayground";
 
 export default function ExperimentBench({ kind }: { kind: string }) {
   const [lit, setLit] = useState<number[]>([]);

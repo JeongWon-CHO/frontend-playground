@@ -1,4 +1,4 @@
-import Icon from "./Icon";
+import Icon from "@/components/Home/Icon";
 import { useRef, useState } from "react";
 
 const labels = ["What if?", "Build.", "Break.", "Learn.", "Repeat."];

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { countPrimes } from "../../components/WebWorker/calculatePrimes";
+import { countPrimes } from "@/components/WebWorker/calculatePrimes";
+import PrimeWorker from "@/components/WebWorker/prime.worker.ts?worker";
 
-import "./WebWorker.css";
+import "@/pages/WebWorker/WebWorker.css";
 
 type Result = {
   mode: "Main Thread" | "Web Worker";
@@ -20,23 +21,19 @@ export default function WebWorker() {
   const [status, setStatus] = useState("대기 중");
   const [result, setResult] = useState<Result | null>(null);
 
-  const [inputValue, setInputValue] = useState("");  // 실험용
+  const [inputValue, setInputValue] = useState(""); // 실험용
 
-  const workerRef = useRef<Worker | null>(null);  // Worker 객체를 저장해두는 곳
-  const ballRef = useRef<HTMLDivElement>(null);  // 화면에서 움직이는 공의 div를 가리키기 위헤 만든 ref
+  const workerRef = useRef<Worker | null>(null); // Worker 객체를 저장해두는 곳
+  const ballRef = useRef<HTMLDivElement>(null); // 화면에서 움직이는 공의 div를 가리키기 위헤 만든 ref
 
   // Web Worker 생성
   useEffect(() => {
-    const worker = new Worker(  // 실제 Worker 생성
-      new URL("../../components/WebWorker/prime.worker.ts", import.meta.url),  // Vite에게 Worker 파일 위치를 알려주는 방식. 해당 꼴을 사용하도록 권징
-      {
-        type: "module",
-      }
-    );
+    const worker = new PrimeWorker(); // Vite의 Worker import로 생성
 
-    workerRef.current = worker;  // Worker 저장. 이후에 workerRef.current로 worker에 접근 가능
+    workerRef.current = worker; // Worker 저장. 이후에 workerRef.current로 worker에 접근 가능
 
-    return () => {  // 페이지가 없어질 때 Worker도 종료
+    return () => {
+      // 페이지가 없어질 때 Worker도 종료
       worker.terminate();
     };
   }, []);
@@ -53,12 +50,10 @@ export default function WebWorker() {
     const animate = (now: number) => {
       const elapsed = now - start;
 
-      const position =
-        Math.sin(elapsed / 500) * 150 + 150;
+      const position = Math.sin(elapsed / 500) * 150 + 150;
 
       if (ballRef.current) {
-        ballRef.current.style.transform =
-          `translateX(${position}px)`;
+        ballRef.current.style.transform = `translateX(${position}px)`;
       }
 
       animationFrameId = requestAnimationFrame(animate);
@@ -71,13 +66,13 @@ export default function WebWorker() {
     };
   }, []);
 
-
   // Main Thread에서 직접 계산
   const runOnMainThread = () => {
     setStatus("Main Thread 계산 중...");
     setResult(null);
 
-    setTimeout(() => {  // 화면을 그리기도 전에 countPrimes()가 시작될 상황을 방지. 실험 화면을 보기 편하게 만든 장치에 가까움
+    setTimeout(() => {
+      // 화면을 그리기도 전에 countPrimes()가 시작될 상황을 방지. 실험 화면을 보기 편하게 만든 장치에 가까움
       const start = performance.now();
 
       const count = countPrimes(limit);
@@ -94,7 +89,6 @@ export default function WebWorker() {
     }, 100);
   };
 
-
   // Web Worker에서 계산
   const runOnWorker = () => {
     const worker = workerRef.current;
@@ -108,9 +102,7 @@ export default function WebWorker() {
 
     const start = performance.now();
 
-    worker.onmessage = (
-      event: MessageEvent<WorkerResponse>
-    ) => {
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const totalTime = performance.now() - start;
 
       setResult({
@@ -131,7 +123,6 @@ export default function WebWorker() {
   return (
     <main className="worker-page">
       <header className="worker-header">
-
         <h1>
           Main Thread
           <br />
@@ -141,8 +132,8 @@ export default function WebWorker() {
         </h1>
 
         <p className="worker-description">
-          CPU 연산을 메인 스레드와 Web Worker에서
-          각각 실행하고 UI 반응성을 비교합니다.
+          CPU 연산을 메인 스레드와 Web Worker에서 각각 실행하고 UI 반응성을
+          비교합니다.
         </p>
       </header>
 
@@ -156,10 +147,7 @@ export default function WebWorker() {
         </p>
 
         <div className="animation-track">
-          <div
-            ref={ballRef}
-            className="animation-ball"
-          />
+          <div ref={ballRef} className="animation-ball" />
         </div>
 
         <input
@@ -167,40 +155,28 @@ export default function WebWorker() {
           type="text"
           placeholder="계산 중에 여기 입력해보기"
           value={inputValue}
-          onChange={(event) =>
-            setInputValue(event.target.value)
-          }
+          onChange={(event) => setInputValue(event.target.value)}
         />
       </section>
 
       <section className="worker-section">
         <h2>02. CPU Task</h2>
 
-        <label className="limit-label">
-          Prime Number Limit
-        </label>
+        <label className="limit-label">Prime Number Limit</label>
 
         <input
           className="worker-input"
           type="number"
           value={limit}
-          onChange={(event) =>
-            setLimit(Number(event.target.value))
-          }
+          onChange={(event) => setLimit(Number(event.target.value))}
         />
 
         <div className="worker-buttons">
-          <button
-            className="worker-button"
-            onClick={runOnMainThread}
-          >
+          <button className="worker-button" onClick={runOnMainThread}>
             Run on Main Thread
           </button>
 
-          <button
-            className="worker-button"
-            onClick={runOnWorker}
-          >
+          <button className="worker-button" onClick={runOnWorker}>
             Run on Web Worker
           </button>
         </div>
@@ -223,24 +199,18 @@ export default function WebWorker() {
 
             <div>
               <span>Prime Count</span>
-              <strong>
-                {result.count.toLocaleString()}
-              </strong>
+              <strong>{result.count.toLocaleString()}</strong>
             </div>
 
             <div>
               <span>Total Time</span>
-              <strong>
-                {result.totalTime.toFixed(2)} ms
-              </strong>
+              <strong>{result.totalTime.toFixed(2)} ms</strong>
             </div>
 
             {result.computeTime !== undefined && (
               <div>
                 <span>Worker Compute</span>
-                <strong>
-                  {result.computeTime.toFixed(2)} ms
-                </strong>
+                <strong>{result.computeTime.toFixed(2)} ms</strong>
               </div>
             )}
           </div>

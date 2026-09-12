@@ -1,4 +1,4 @@
-import { countPrimes } from './calculatePrimes';
+import { countPrimes } from '@/components/WebWorker/calculatePrimes';
 
 type WorkerRequest = {
   limit: number;
