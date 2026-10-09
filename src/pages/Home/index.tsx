@@ -1,461 +1,441 @@
-import Icon from "@/components/Home/Icon";
-import { useLayoutEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import Sculpture from "@/components/Home/Sculpture";
-import PageMotion from "@/components/Home/PageMotion";
-import LivingBackdrop from "@/components/Home/LivingBackdrop";
-import SignalPlayground from "@/components/Home/SignalPlayground";
-import ExperimentBench from "@/components/Home/ExperimentBench";
-import CuriosityPlayground from "@/components/Home/CuriosityPlayground";
-import SectionNavigation from "@/components/Home/SectionNavigation";
-import ExperimentPreview from "@/components/Home/ExperimentPreview";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { categories, experiments } from "@/data/experiments";
-import "@/pages/Home/Home.css";
-import {
-  rememberHomeScroll,
-  restoreHomeScroll,
-} from "@/pages/Home/scrollPosition";
-
-const github = "https://github.com/JeongWon-CHO/frontend-playground";
-const githubMain = "https://github.com/JeongWon-CHO";
-
-const featured = experiments
-  .filter((e) => e.status === "live" && e.featured !== undefined)
-  .sort(
-    (a, b) =>
-      (a.status === "live" ? (a.featured ?? 0) : 0) -
-      (b.status === "live" ? (b.featured ?? 0) : 0),
-  )
-  .slice(0, 3);
+import ExperimentDisc from "@/components/Home/ExperimentDisc";
+import "./Home.css";
 export default function Home() {
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const index = Math.max(
+    0,
+    experiments.findIndex((e) => e.id === params.get("disc")),
+  );
+  const [panel, setPanel] = useState<"index" | "about" | null>(null);
+  const [loading, setLoading] = useState(!sessionStorage.getItem("pg-intro"));
+  const [progress, setProgress] = useState(0);
+  const stage = useRef<HTMLDivElement>(null);
+  const wheel = useRef({ total: 0, time: 0 });
+  const touch = useRef<number | null>(null);
+  const active = experiments[index];
   const query = params.get("q") ?? "";
   const category = params.get("category") ?? "All";
-  const sort = params.get("sort") ?? "latest";
-  const [selected, setSelected] = useState(experiments[0].id);
-  const [featureIndex, setFeatureIndex] = useState(0);
-  const [split, setSplit] = useState(true);
-  const [load, setLoad] = useState(65);
-  const rawLimit = Number(params.get("limit"));
-  const limit = Number.isFinite(rawLimit) ? Math.max(12, rawLimit) : 12;
   const filtered = experiments
     .filter(
       (e) =>
         (category === "All" || e.category === category) &&
-        `${e.title} ${e.description} ${e.tags.join(" ")}`
+        `${e.title} ${e.tags.join(" ")} ${e.description}`
           .toLowerCase()
           .includes(query.toLowerCase()),
     )
     .sort((a, b) =>
-      sort === "oldest"
+      params.get("sort") === "oldest"
         ? a.date.localeCompare(b.date)
         : b.date.localeCompare(a.date),
     );
-  const active = filtered.find((e) => e.id === selected) ?? filtered[0];
-  const feature = featured[featureIndex];
-  const update = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
-    if (value) next.set(key, value);
-    else next.delete(key);
-    if (key !== "limit") next.delete("limit");
-    setParams(next, { replace: true });
-  };
-  useLayoutEffect(() => {
-    document.title = "Playground — Ideas in motion";
-    restoreHomeScroll();
-  }, []);
-  const remember = () => {
-    rememberHomeScroll();
+  function select(next: number) {
+    const value = Math.min(experiments.length - 1, Math.max(0, next));
+    const updated = new URLSearchParams(params);
+    updated.set("disc", experiments[value].id);
+    setParams(updated, { replace: true });
+  }
+  function remember() {
     sessionStorage.setItem("playground-search", params.toString());
-  };
+  }
+  function update(key: string, value: string) {
+    const updated = new URLSearchParams(params);
+    if (value) updated.set(key, value);
+    else updated.delete(key);
+    setParams(updated, { replace: true });
+  }
+  useEffect(() => {
+    document.title = "Playground — The experiment collection";
+  }, []);
+  useEffect(() => {
+    if (!loading) return;
+    let frame: number;
+    let start = 0;
+    let cancelled = false;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    // Wait for the document's font assets before completing the entrance.
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      function tick(now: number) {
+        if (!start) start = now;
+        const value = Math.min(
+          100,
+          Math.round(((now - start) / (reduced ? 1 : 1250)) * 100),
+        );
+        setProgress(value);
+        if (value < 100) frame = requestAnimationFrame(tick);
+        else {
+          sessionStorage.setItem("pg-intro", "1");
+          setLoading(false);
+        }
+      }
+      frame = requestAnimationFrame(tick);
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [loading]);
+  useEffect(() => {
+    const element = stage.current;
+    if (!element || panel || loading) return;
+    function onWheel(event: WheelEvent) {
+      if (event.ctrlKey || Math.abs(event.deltaX) < Math.abs(event.deltaY))
+        return;
+      event.preventDefault();
+      const now = performance.now();
+      if (now - wheel.current.time < 750) return;
+      wheel.current.total += event.deltaX;
+      if (Math.abs(wheel.current.total) > 45) {
+        select(index + Math.sign(wheel.current.total));
+        wheel.current = { total: 0, time: now };
+      }
+    }
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  });
+  useEffect(() => {
+    if (!panel) return;
+    const close = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPanel(null);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [panel]);
   return (
-    <div className="playground" id="top">
-      <LivingBackdrop />
-      <PageMotion />
-      <SectionNavigation />
-      <a className="skip-link" href="#experiments">
-        실험 목록으로 건너뛰기
+    <div className={`collection ${loading ? "is-loading" : ""}`}>
+      <a className="skip-link" href="#collection-stage">
+        실험 컬렉션으로 건너뛰기
       </a>
-      <header className="site-header shell">
-        <a className="wordmark" href="#top">
-          <span className="brand-symbol">✳</span> playground
-          <span className="wordmark-dot">®</span>
-        </a>
-        <nav aria-label="메인 메뉴">
-          <a href="#experiments">
-            Experiments{" "}
-            <span>{String(experiments.length).padStart(2, "0")}</span>
-          </a>
-          <a href="#about">About</a>
-          <a href={githubMain} target="_blank" rel="noreferrer">
-            GitHub <Icon />
-          </a>
-        </nav>
-        <span className="header-note mono">
-          <i /> ALWAYS IN PROGRESS
-        </span>
-      </header>
+      <nav className="collection-nav" aria-label="메인 메뉴">
+        <button
+          className="pg-logo"
+          onClick={() => {
+            setPanel(null);
+            select(0);
+          }}
+          aria-label="Playground 홈"
+        >
+          pg.
+        </button>
+        {loading ? (
+          <span>
+            Preparing <span className="loading-spinner" />
+          </span>
+        ) : (
+          <>
+            <button
+              className={!panel ? "nav-active" : ""}
+              onClick={() => setPanel(null)}
+            >
+              Experiments
+            </button>
+            <button
+              className={panel === "about" ? "nav-active" : ""}
+              onClick={() => setPanel(panel === "about" ? null : "about")}
+            >
+              About
+            </button>
+            <button
+              aria-expanded={panel === "index"}
+              aria-controls="collection-index"
+              onClick={() => setPanel(panel === "index" ? null : "index")}
+            >
+              Index{" "}
+              <span className={`chevron ${panel === "index" ? "up" : ""}`} />
+            </button>
+          </>
+        )}
+      </nav>
       <main>
-        <section className="hero shell" aria-labelledby="hero-title">
-          <div className="hero-eyebrow mono">
-            <span className="tiny-cross">+</span> A PERSONAL SPACE FOR WEB
-            EXPERIMENTS
-          </div>
-          <div className="hero-content">
-            <div className="hero-copy">
-              <h1 id="hero-title">
-                Ideas
-                <br />
-                in <em>motion.</em>
-              </h1>
-              <p>
-                호기심에서 시작해, 경험으로 완성하는 웹.
-                <br />
-                만들고, 부수고, 다시 발견하는 작은 실험실.
-              </p>
-              <a className="explore-link" href="#experiments">
-                <span className="circle-arrow">
-                  <Icon name="arrow-down" />
-                </span>{" "}
-                Explore the experiments
-              </a>
+        <section className="collection-info" key={active.id} aria-live="polite">
+          <h1>{active.tags[0]}</h1>
+          <dl>
+            <div>
+              <dt>CREATED BY</dt>
+              <dd>JeongWon Cho</dd>
             </div>
-            <Sculpture />
-          </div>
-          <div className="hero-bottom mono">
-            <span>CODE. PLAY. DISCOVER. REPEAT.</span>
-            <span>
-              SCROLL TO DISCOVER{" "}
-              <span className="lime">
-                <Icon name="arrow-down" />
-              </span>
-            </span>
-            <span>
-              BASED IN CURIOSITY <Icon />
-            </span>
-          </div>
+            <div>
+              <dt>YEAR</dt>
+              <dd>{active.date.slice(0, 4)}</dd>
+            </div>
+            <div>
+              <dt>BUILT WITH</dt>
+              <dd>
+                {active.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </dd>
+            </div>
+            <div className="info-status">
+              <dt>STATUS</dt>
+              <dd>
+                {active.status === "live"
+                  ? "Available to explore ↗"
+                  : "Work in progress"}
+              </dd>
+            </div>
+          </dl>
         </section>
-        {feature && (
-          <section
-            className="featured-section shell"
-            aria-labelledby="featured-title"
-          >
-            <div className="section-top">
-              <span className="eyebrow mono">
-                <span className="lime">01 /</span> IN THE SPOTLIGHT
-              </span>
-              <span className="mono muted">
-                SELECTED EXPERIMENT {String(featureIndex + 1).padStart(2, "0")}{" "}
-                / {String(featured.length).padStart(2, "0")}
-              </span>
-            </div>
-            <div className="featured-card">
-              <div className="featured-art">
-                <div className="art-top mono">
-                  <span>
-                    <i className="status-dot" /> INTERACTIVE PREVIEW
-                  </span>
-                  <span>FIG. {feature.id}</span>
-                </div>
-                {feature.preview === "threads" ? (
-                  <SignalPlayground split={split} load={load} />
-                ) : (
-                  <ExperimentPreview
-                    kind={feature.preview}
-                    split={split}
-                    load={load}
-                  />
-                )}
-                {feature.preview === "threads" && (
-                  <div className="workload-control">
-                    <label htmlFor="preview-workload">
-                      <span className="mono">DRAG TO ADD WORK</span>
-                      <output>{load}%</output>
-                    </label>
-                    <input
-                      id="preview-workload"
-                      type="range"
-                      min="10"
-                      max="100"
-                      step="5"
-                      value={load}
-                      onChange={(event) => setLoad(Number(event.target.value))}
-                    />
-                    <p>
-                      {split
-                        ? "작업은 나눠서, 인터페이스는 부드럽게."
-                        : load >= 60
-                          ? "작업이 쌓일수록 메인 스레드가 혼잡해져요."
-                          : "작업량을 올려 흐름의 변화를 확인해 보세요."}
-                    </p>
-                  </div>
-                )}
-                <div className="art-controls">
-                  <span className="mono">CONCEPT VISUALIZATION</span>
-                  {feature.preview === "threads" && (
-                    <button
-                      aria-pressed={split}
-                      onClick={() => setSplit(!split)}
+        <div
+          ref={stage}
+          id="collection-stage"
+          className="collection-stage"
+          tabIndex={0}
+          role="region"
+          aria-label="실험 CD 컬렉션"
+          inert={loading || !!panel}
+          onKeyDown={(e) => {
+            if (panel || loading) return;
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              select(index + (e.key === "ArrowRight" ? 1 : -1));
+            }
+          }}
+          onTouchStart={(e) => {
+            touch.current = e.touches[0].clientX;
+          }}
+          onTouchEnd={(e) => {
+            if (touch.current !== null) {
+              const delta = touch.current - e.changedTouches[0].clientX;
+              if (Math.abs(delta) > 45) select(index + Math.sign(delta));
+              touch.current = null;
+            }
+          }}
+        >
+          {experiments.map((experiment, i) => {
+            const offset = i - index;
+            return (
+              <div
+                className={`disc-position ${offset === 0 ? "current-disc" : ""}`}
+                key={experiment.id}
+                style={
+                  {
+                    "--offset": offset,
+                    "--distance": Math.abs(offset),
+                  } as CSSProperties
+                }
+                aria-hidden={Math.abs(offset) > 1}
+              >
+                <button
+                  className="disc-button"
+                  tabIndex={Math.abs(offset) > 1 ? -1 : 0}
+                  aria-label={
+                    offset === 0
+                      ? `${experiment.title} 상세 보기`
+                      : `${offset < 0 ? "이전" : "다음"} 실험: ${experiment.title}`
+                  }
+                  onClick={() => {
+                    if (offset !== 0) select(i);
+                    else if (experiment.status === "live") {
+                      remember();
+                      navigate(experiment.path);
+                    } else setPanel("index");
+                  }}
+                  onPointerMove={(e) => {
+                    if (e.pointerType !== "mouse") return;
+                    const box = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty(
+                      "--mx",
+                      `${((e.clientX - box.left) / box.width) * 2 - 1}`,
+                    );
+                    e.currentTarget.style.setProperty(
+                      "--my",
+                      `${((e.clientY - box.top) / box.height) * 2 - 1}`,
+                    );
+                  }}
+                  onPointerLeave={(e) => {
+                    e.currentTarget.style.setProperty("--mx", "0");
+                    e.currentTarget.style.setProperty("--my", "0");
+                  }}
+                >
+                  <div className="disc-motion">
+                    <ExperimentDisc index={i} />
+                    <svg
+                      className="disc-scribble"
+                      viewBox="0 0 600 600"
+                      aria-hidden="true"
                     >
-                      <span className={`toggle ${split ? "on" : ""}`} /> Web
-                      Worker {split ? "ON" : "OFF"}
-                    </button>
-                  )}
-                </div>
+                      <path d="M85 104C175 7 381 -8 489 91S625 330 522 476 296 623 150 541 1 304 45 193 M105 74C226 -22 414 7 509 113S606 343 500 493 277 601 127 523 5 334 25 273" />
+                    </svg>
+                  </div>
+                </button>
               </div>
-              <div className="featured-copy">
-                <span className="pill mono">
-                  {feature.category.toUpperCase()}
-                </span>
-                <h2 id="featured-title">{feature.title}</h2>
-                <p>{feature.description}</p>
-                <div className="tags mono">
-                  {feature.tags.map((tag) => (
-                    <span key={tag}>{tag}</span>
+            );
+          })}
+        </div>
+        <div className="collection-notes" key={`notes-${active.id}`}>
+          <div>
+            <span className="note-symbol">✳</span>
+            <span className="note-label">THE EXPERIMENT</span>
+            <h2>“{active.title}”</h2>
+          </div>
+          <div>
+            <span className="note-symbol">↗</span>
+            <span className="note-label">
+              {active.category.toUpperCase()} / VOL. {active.id}
+            </span>
+            <p>{active.description}</p>
+            {active.status === "live" ? (
+              <Link
+                className="experiment-open"
+                to={active.path}
+                onClick={remember}
+              >
+                실험 시작하기 ↗
+              </Link>
+            ) : (
+              <span className="coming-soon">COMING SOON</span>
+            )}
+          </div>
+        </div>
+        <footer className="collection-footer">
+          <span>Frontend Playground</span>
+          <div>
+            <button
+              onClick={() => select(index - 1)}
+              disabled={index === 0}
+              aria-label="이전 CD"
+            >
+              ←
+            </button>
+            <span>
+              {String(index + 1).padStart(2, "0")} /{" "}
+              {String(experiments.length).padStart(2, "0")}
+            </span>
+            <button
+              onClick={() => select(index + 1)}
+              disabled={index === experiments.length - 1}
+              aria-label="다음 CD"
+            >
+              →
+            </button>
+          </div>
+          <span>© 2026</span>
+        </footer>
+        {loading && (
+          <div
+            className="intro-overlay"
+            role="status"
+            aria-label="컬렉션 준비 중"
+          >
+            <span className="intro-counter">{progress}</span>
+            <span className="intro-left">Frontend Playground</span>
+            <span className="intro-right">2026</span>
+          </div>
+        )}
+        {panel && (
+          <section
+            className="collection-panel"
+            id="collection-index"
+            aria-label={panel === "index" ? "실험 목록" : "소개"}
+          >
+            <div className="panel-heading">
+              <span>
+                PLAYGROUND / {panel === "index" ? "THE INDEX" : "ABOUT"}
+              </span>
+              <button onClick={() => setPanel(null)} aria-label="패널 닫기">
+                Close ×
+              </button>
+            </div>
+            {panel === "about" ? (
+              <div className="collection-about">
+                <h2>
+                  Curious
+                  <br />
+                  by default.
+                </h2>
+                <p>
+                  호기심에서 시작해, 경험으로 완성하는 웹.
+                  <br />
+                  만들고, 부수고, 다시 발견하는 작은 실험실.
+                </p>
+                <p>
+                  작은 궁금증을 코드로 옮기고,
+                  <br />
+                  직접 만들어 답을 찾아갑니다.
+                </p>
+                <a
+                  href="https://github.com/JeongWon-CHO/frontend-playground"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Follow the exploration on GitHub ↗
+                </a>
+              </div>
+            ) : (
+              <>
+                <h2 className="index-title">
+                  The experiments <sup>({experiments.length})</sup>
+                </h2>
+                <div className="index-tools">
+                  <input
+                    type="search"
+                    aria-label="실험 검색"
+                    placeholder="Search experiments…"
+                    value={query}
+                    onChange={(e) => update("q", e.target.value)}
+                  />
+                  <select
+                    aria-label="정렬 순서"
+                    value={params.get("sort") ?? "latest"}
+                    onChange={(e) => update("sort", e.target.value)}
+                  >
+                    <option value="latest">Latest first</option>
+                    <option value="oldest">Oldest first</option>
+                  </select>
+                </div>
+                <div className="index-filters">
+                  {categories.map((c) => (
+                    <button
+                      key={c}
+                      aria-pressed={category === c}
+                      onClick={() => update("category", c === "All" ? "" : c)}
+                    >
+                      {c}
+                    </button>
                   ))}
                 </div>
-                {feature.status === "live" && (
-                  <Link
-                    className="primary-link"
-                    to={feature.path}
-                    onClick={remember}
-                  >
-                    실험 시작하기{" "}
-                    <span>
-                      <Icon />
-                    </span>
-                  </Link>
-                )}
-                <span className="feature-footnote mono">
-                  BUILT TO UNDERSTAND, NOT JUST TO WORK.
-                </span>
-              </div>
-            </div>
-            {featured.length > 1 && (
-              <div className="feature-selector">
-                {featured.map((e, i) => (
-                  <button
-                    key={e.id}
-                    aria-pressed={featureIndex === i}
-                    onClick={() => setFeatureIndex(i)}
-                  >
-                    {e.title}
-                  </button>
-                ))}
-              </div>
+                <div className="index-list">
+                  {filtered.map((e) => (
+                    <article key={e.id}>
+                      <button
+                        className="index-select"
+                        onClick={() => {
+                          select(experiments.indexOf(e));
+                          setPanel(null);
+                        }}
+                      >
+                        <span>{e.id}</span>
+                        <h3>{e.title}</h3>
+                        <span>{e.category}</span>
+                      </button>
+                      {e.status === "live" ? (
+                        <Link to={e.path} onClick={remember}>
+                          Explore ↗
+                        </Link>
+                      ) : (
+                        <span className="index-planned">In progress</span>
+                      )}
+                    </article>
+                  ))}
+                  {!filtered.length && (
+                    <p>
+                      검색 결과가 없어요. 다른 검색어나 분류를 선택해 보세요.
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </section>
         )}
-        <section
-          id="experiments"
-          className="archive shell"
-          aria-labelledby="archive-title"
-        >
-          <div className="section-top">
-            <span className="eyebrow mono">
-              <span className="lime">02 /</span> THE EXPLORATION INDEX
-            </span>
-            <span className="mono muted">AN EVER-GROWING COLLECTION</span>
-          </div>
-          <div className="archive-heading">
-            <h2 id="archive-title">
-              The experiments
-              <span>({String(experiments.length).padStart(2, "0")})</span>
-            </h2>
-            <p>
-              작은 질문 하나, 새로운 가능성 하나.
-              <br />
-              계속해서 쌓아가는 실험의 기록.
-            </p>
-          </div>
-          <div className="archive-tools">
-            <div className="filters" role="group" aria-label="실험 분류">
-              {categories.map((c) => (
-                <button
-                  key={c}
-                  aria-pressed={category === c}
-                  className={category === c ? "active" : ""}
-                  onClick={() => update("category", c === "All" ? "" : c)}
-                >
-                  {c}
-                  {c === "All" && <span>{experiments.length}</span>}
-                </button>
-              ))}
-            </div>
-            <label className="search-box">
-              <span aria-hidden="true">⌕</span>
-              <input
-                type="search"
-                aria-label="실험 검색"
-                placeholder="Search experiments"
-                value={query}
-                onChange={(e) => update("q", e.target.value)}
-              />
-            </label>
-          </div>
-          <div className="archive-body">
-            <div className="experiment-list">
-              <div className="list-header mono">
-                <span>
-                  {String(filtered.length).padStart(2, "0")} EXPERIMENTS
-                </span>
-                <select
-                  aria-label="정렬 순서"
-                  value={sort}
-                  onChange={(e) => update("sort", e.target.value)}
-                >
-                  <option value="latest">Latest first</option>
-                  <option value="oldest">Oldest first</option>
-                </select>
-              </div>
-              {filtered.slice(0, limit).map((e) => (
-                <article
-                  className={`experiment-row ${active?.id === e.id ? "selected" : ""}`}
-                  key={e.id}
-                  onMouseEnter={() => setSelected(e.id)}
-                  onFocus={() => setSelected(e.id)}
-                >
-                  <span className="row-number mono">{e.id}</span>
-                  {e.status === "live" ? (
-                    <Link onClick={remember} to={e.path} className="row-main">
-                      <h3>{e.title}</h3>
-                      <span className="row-tags mono">
-                        {e.tags.join(" / ")}
-                      </span>
-                    </Link>
-                  ) : (
-                    <button
-                      className="row-main"
-                      onClick={() => setSelected(e.id)}
-                      aria-label={`${e.title}, 준비 중. 프리뷰 보기`}
-                    >
-                      <h3>{e.title}</h3>
-                      <span className="row-tags mono">
-                        {e.tags.join(" / ")}
-                      </span>
-                    </button>
-                  )}
-                  <span className={`row-status mono ${e.status}`}>
-                    {e.status === "live" ? (
-                      <>
-                        <i /> LIVE <Icon />
-                      </>
-                    ) : (
-                      "COMING SOON"
-                    )}
-                  </span>
-                </article>
-              ))}
-              {!filtered.length && (
-                <div className="empty-state">
-                  <span>아직 이곳은 미지의 영역.</span>
-                  <p>다른 검색어나 분류로 실험을 찾아보세요.</p>
-                  <button onClick={() => setParams({}, { replace: true })}>
-                    전체 실험 보기 <Icon />
-                  </button>
-                </div>
-              )}
-              {filtered.length > limit && (
-                <button
-                  className="load-more"
-                  onClick={() => update("limit", String(limit + 12))}
-                >
-                  Load more +
-                </button>
-              )}
-              <div className="list-bottom mono">
-                <span>
-                  <i className="status-dot" />{" "}
-                  {experiments.filter((e) => e.status === "live").length} LIVE
-                </span>
-                <span>
-                  MORE IDEAS ARE ON THE WAY <Icon />
-                </span>
-              </div>
-            </div>
-            <aside className="archive-preview" aria-label="선택한 실험 프리뷰">
-              {active ? (
-                <>
-                  <div className="preview-label mono">
-                    <span>EXPERIMENT / {active.id}</span>
-                    <span>
-                      <Icon />
-                    </span>
-                  </div>
-                  <ExperimentBench key={active.id} kind={active.preview} />
-                  <div
-                    className="preview-description"
-                    key={`description-${active.id}`}
-                  >
-                    <span className="mono lime">
-                      {active.category.toUpperCase()}
-                    </span>
-                    <h3>{active.title}</h3>
-                    <p>{active.description}</p>
-                    {active.status === "planned" && (
-                      <span className="planned-note mono">
-                        IN THE PIPELINE — 준비 중
-                      </span>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="preview-empty mono">
-                  THE NEXT IDEA IS OUT THERE.
-                </div>
-              )}
-            </aside>
-          </div>
-        </section>
-        <section className="about-section shell" id="about">
-          <div className="section-top">
-            <span className="eyebrow mono">
-              <span className="lime">03 /</span> THE MINDSET
-            </span>
-            <span className="brand-symbol">✳</span>
-          </div>
-          <div className="about-content">
-            <h2>
-              Curious
-              <br />
-              by <em>default.</em>
-              <span className="lime">
-                <Icon />
-              </span>
-            </h2>
-            <div>
-              <p>
-                어떻게 움직일까? 더 나아질 수 있을까?
-                <br />
-                작은 궁금증을 코드로 옮기고,
-                <br />
-                직접 만들어 답을 찾아갑니다.
-              </p>
-              <p className="muted">
-                이곳은 완성된 결과와 아직 진행 중인 생각이
-                <br />
-                함께 자라는 프론트엔드 플레이그라운드입니다.
-              </p>
-              <a
-                href={github}
-                target="_blank"
-                rel="noreferrer"
-                className="text-link"
-              >
-                Follow the exploration on GitHub <Icon />
-              </a>
-            </div>
-          </div>
-          <CuriosityPlayground />
-        </section>
       </main>
-      <footer className="site-footer shell mono">
-        <span>© {new Date().getFullYear()} PLAYGROUND</span>
-        <span>A LITTLE CURIOUS. ALWAYS BUILDING.</span>
-        <a href="#top">
-          BACK TO TOP <Icon name="arrow-up" />
-        </a>
-      </footer>
     </div>
   );
 }

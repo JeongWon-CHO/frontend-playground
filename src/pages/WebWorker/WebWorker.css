@@ -117,3 +117,100 @@
   font-size: 12px;
   color: #777;
 }
+
+/* The experiment uses the same editorial language as the collection. */
+.worker-page {
+  width: min(1000px, calc(100% - 48px));
+  padding: 85px 0 100px;
+  color: #181914;
+}
+.worker-header {
+  max-width: 800px;
+  margin-bottom: 70px;
+}
+.worker-header:before {
+  content: "EXPERIMENT 001 / PERFORMANCE";
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 26px;
+}
+.worker-header h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 92px);
+  letter-spacing: -4px;
+  line-height: 0.98;
+}
+.worker-description {
+  max-width: 560px;
+  font-size: 15px;
+  margin-top: 30px;
+}
+.worker-section {
+  padding: 28px 0;
+  margin-top: 0;
+  border: 0;
+  border-top: 1px solid #8e8f87;
+  border-radius: 0;
+}
+.worker-section h2 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+.worker-section p {
+  font-size: 14px;
+}
+.worker-input {
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid #91928b;
+  background: #e5e5df;
+  color: inherit;
+}
+.worker-button {
+  border-radius: 0;
+  border: 1px solid #33352a;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 400;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.worker-button:hover {
+  background: #2e3322;
+  color: #f2f2ec;
+}
+.animation-track {
+  border-radius: 0;
+  background: #dedfd5;
+}
+.animation-ball {
+  background: #767b42;
+}
+.status-box,
+.result-grid > div {
+  border-radius: 0;
+  background: #e4e5dd;
+}
+.limit-label {
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+@media (max-width: 560px) {
+  .worker-page {
+    padding-top: 55px;
+  }
+  .worker-header h1 {
+    letter-spacing: -2px;
+  }
+  .worker-buttons {
+    flex-direction: column;
+  }
+}

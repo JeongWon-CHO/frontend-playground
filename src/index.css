@@ -1,57 +1,46 @@
 :root {
-  font-family: system-ui, "Segoe UI", sans-serif;
-  color: #292c25;
-  background: #fff;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+  color: #181914;
+  background: #efefeb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 body {
   margin: 0;
 }
-
 #root {
   min-height: 100svh;
 }
-
 * {
   box-sizing: border-box;
 }
-
 button,
 input {
   font: inherit;
 }
-
 button {
   cursor: pointer;
 }
-
 h1,
 h2 {
   line-height: 1.15;
 }
-
 p {
   line-height: 1.7;
 }
-
 a {
   color: inherit;
 }
-
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #616b4d #141610;
+  scrollbar-color: #9c9f91 #efefeb;
 }
-
 ::selection {
-  background: #c9f76a;
-  color: #141610;
+  background: #b8be93;
+  color: #181914;
 }
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -2,8 +2,13 @@
   display: inline-block;
   margin: 24px;
   color: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px solid #86887b;
+  padding-bottom: 5px;
 }
 .route-loading {
   padding: 80px 24px;
   text-align: center;
+  font-family: Georgia, serif;
 }
