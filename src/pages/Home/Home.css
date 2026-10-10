@@ -744,3 +744,20 @@
     transform: translateY(0) rotate(0) scale(1);
   }
 }
+
+/* The existing disc mask clips the sheen to the surface and keeps the centre hole clear. */
+.disc-reflection {
+  pointer-events: none;
+  transform-origin: 300px 300px;
+  opacity: .64;
+  transform: translate(calc(var(--mx, 0) * 100px), calc(var(--my, 0) * 80px))
+    rotate(calc(var(--mx, 0) * 12deg - var(--my, 0) * 8deg + var(--offset, 0) * 9deg));
+  transition: transform .35s ease-out, opacity .35s;
+}
+.disc-button:hover .disc-reflection,
+.disc-button:focus-visible .disc-reflection { opacity: .96; }
+.disc-rim-glint { pointer-events: none; opacity: .3; }
+.is-opening .disc-reflection { opacity: .64; }
+@media (prefers-reduced-motion: reduce) {
+  .disc-reflection { transform: none; transition: none; }
+}

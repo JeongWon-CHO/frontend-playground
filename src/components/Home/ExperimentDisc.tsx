@@ -28,6 +28,17 @@ export default function ExperimentDisc({ index }: { index: number }) {
           <stop offset=".55" stopColor="#dddeda" />
           <stop offset="1" stopColor="#5d636b" />
         </linearGradient>
+        <linearGradient id={`${id}-reflection`} gradientUnits="userSpaceOnUse" x1="0" y1="600" x2="600" y2="0">
+          <stop offset=".08" stopColor="#fff" stopOpacity="0" />
+          <stop offset=".3" stopColor="#e5f0ff" stopOpacity=".05" />
+          <stop offset=".5" stopColor="#fff" stopOpacity=".2" />
+          <stop offset=".7" stopColor="#fff3dd" stopOpacity=".05" />
+          <stop offset=".92" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id={`${id}-glint`} cx="70%" cy="20%" r="85%">
+          <stop stopColor="#fff" stopOpacity=".1" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
         <filter id={`${id}-grain`}>
           <feTurbulence
             type="fractalNoise"
@@ -158,6 +169,11 @@ export default function ExperimentDisc({ index }: { index: number }) {
         <circle cx="300" cy="300" r="57" fill="#8f969e" />
         <circle cx="300" cy="300" r="49" fill="#c6c9cb" />
         <circle cx="300" cy="300" r="42" fill="#efefe9" />
+        <g className="disc-reflection">
+          <rect x="-300" y="-300" width="1200" height="1200" fill={`url(#${id}-reflection)`} />
+          <rect x="-300" y="-300" width="1200" height="1200" fill={`url(#${id}-glint)`} />
+        </g>
+        <circle className="disc-rim-glint" cx="300" cy="300" r="296" fill="none" stroke={`url(#${id}-reflection)`} strokeWidth="3" />
       </g>
     </svg>
   );
