@@ -691,3 +691,34 @@
   35% { stroke-dasharray: 1650 190; stroke-dashoffset: -610; }
   70% { stroke-dasharray: 1260 580; stroke-dashoffset: -1220; }
 }
+
+/* Keep the selected disc mounted until its exit choreography finishes. */
+.is-opening .collection-nav,
+.is-opening .collection-info,
+.is-opening .collection-notes,
+.is-opening .disc-position:not(.current-disc) {
+  pointer-events: none;
+  animation: collection-exit .35s ease-in both;
+}
+.is-opening .collection-info { animation-delay: .05s; }
+.is-opening .collection-notes { animation: notes-exit .3s ease-in both; }
+.is-opening .current-disc {
+  pointer-events: none;
+  animation: disc-open 1.15s cubic-bezier(.65,0,.25,1) both;
+}
+.is-opening .current-disc .disc-motion {
+  transform: rotate(-42deg) rotateX(43deg) rotate(20deg);
+  transition-duration: .6s;
+}
+.is-opening .disc-scribble { opacity: 0 !important; }
+@keyframes collection-exit {
+  to { opacity: 0; clip-path: inset(0 0 100% 0); }
+}
+@keyframes notes-exit {
+  to { opacity: 0; transform: translate(-50%, -12px); }
+}
+@keyframes disc-open {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  45% { transform: translate(-50%, -42%) scale(1.02); opacity: 1; }
+  100% { transform: translate(-50%, 125svh) scale(.85); opacity: 0; }
+}

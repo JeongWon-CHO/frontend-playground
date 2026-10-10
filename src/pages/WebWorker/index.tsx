@@ -122,21 +122,6 @@ export default function WebWorker() {
 
   return (
     <main className="worker-page">
-      <header className="worker-header">
-        <h1>
-          Main Thread
-          <br />
-          vs
-          <br />
-          Web Worker
-        </h1>
-
-        <p className="worker-description">
-          CPU 연산을 메인 스레드와 Web Worker에서 각각 실행하고 UI 반응성을
-          비교합니다.
-        </p>
-      </header>
-
       <section className="worker-section">
         <h2>01. UI Responsiveness</h2>
 

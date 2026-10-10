@@ -14,6 +14,8 @@ export default function Home() {
   const [panel, setPanel] = useState<"index" | "about" | null>(null);
   const [loading, setLoading] = useState(!sessionStorage.getItem("pg-intro"));
   const [progress, setProgress] = useState(0);
+  const [opening, setOpening] = useState(false);
+  const openingRef = useRef(false);
   const stage = useRef<HTMLDivElement>(null);
   const wheel = useRef({ total: 0, time: 0 });
   const touch = useRef<number | null>(null);
@@ -34,6 +36,7 @@ export default function Home() {
         : b.date.localeCompare(a.date),
     );
   function select(next: number) {
+    if (openingRef.current) return;
     const value = Math.min(experiments.length - 1, Math.max(0, next));
     const updated = new URLSearchParams(params);
     updated.set("disc", experiments[value].id);
@@ -51,6 +54,12 @@ export default function Home() {
   useEffect(() => {
     document.title = "Playground — The experiment collection";
   }, []);
+  useEffect(() => {
+    if (!opening || active.status !== "live") return;
+    // Recover if the browser cancels the exit animation (for example, when motion settings change).
+    const fallback = window.setTimeout(() => navigate(active.path), 1500);
+    return () => window.clearTimeout(fallback);
+  }, [opening, active, navigate]);
   useEffect(() => {
     if (!loading) return;
     let frame: number;
@@ -84,7 +93,7 @@ export default function Home() {
   }, [loading]);
   useEffect(() => {
     const element = stage.current;
-    if (!element || panel || loading) return;
+    if (!element || panel || loading || opening) return;
     function onWheel(event: WheelEvent) {
       if (event.ctrlKey || Math.abs(event.deltaX) < Math.abs(event.deltaY))
         return;
@@ -109,11 +118,11 @@ export default function Home() {
     return () => window.removeEventListener("keydown", close);
   }, [panel]);
   return (
-    <div className={`collection ${loading ? "is-loading" : ""}`}>
+    <div className={`collection ${loading ? "is-loading" : ""} ${opening ? "is-opening" : ""}`}>
       <a className="skip-link" href="#collection-stage">
         실험 컬렉션으로 건너뛰기
       </a>
-      <nav className="collection-nav" aria-label="메인 메뉴">
+      <nav className="collection-nav" aria-label="메인 메뉴" inert={opening}>
         <button
           className="pg-logo"
           onClick={() => {
@@ -190,9 +199,9 @@ export default function Home() {
           tabIndex={0}
           role="region"
           aria-label="실험 CD 컬렉션"
-          inert={loading || !!panel}
+          inert={loading || !!panel || opening}
           onKeyDown={(e) => {
-            if (panel || loading) return;
+            if (panel || loading || opening) return;
             if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
               e.preventDefault();
               select(index + (e.key === "ArrowRight" ? 1 : -1));
@@ -222,6 +231,11 @@ export default function Home() {
                   } as CSSProperties
                 }
                 aria-hidden={Math.abs(offset) > 1}
+                onAnimationEnd={(event) => {
+                  if (event.target === event.currentTarget && event.animationName === 'disc-open' && openingRef.current && experiment.status === 'live' && offset === 0) {
+                    navigate(experiment.path);
+                  }
+                }}
               >
                 <button
                   className="disc-button"
@@ -234,12 +248,18 @@ export default function Home() {
                   onClick={() => {
                     if (offset !== 0) select(i);
                     else if (experiment.status === "live") {
+                      if (openingRef.current) return;
                       remember();
-                      navigate(experiment.path);
+                      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        navigate(experiment.path);
+                        return;
+                      }
+                      openingRef.current = true;
+                      setOpening(true);
                     } else setPanel("index");
                   }}
                   onPointerMove={(e) => {
-                    if (e.pointerType !== "mouse") return;
+                    if (e.pointerType !== "mouse" || openingRef.current) return;
                     const box = e.currentTarget.getBoundingClientRect();
                     e.currentTarget.style.setProperty(
                       "--mx",

@@ -12,3 +12,96 @@
   text-align: center;
   font-family: Georgia, serif;
 }
+
+.experiment-detail {
+  min-height: 100svh;
+  background: #efefeb;
+  overflow: clip;
+}
+.experiment-detail .experiment-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  animation: detail-text .5s .75s both;
+}
+.detail-header {
+  padding: clamp(110px, 19svh, 200px) 16px 0;
+  text-align: center;
+}
+.detail-kicker {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  animation: detail-text .6s .1s both;
+}
+.detail-header h1 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(58px, 11vw, 180px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -.065em;
+  line-height: 1;
+  margin: 20px 0 14px;
+  outline: none;
+  animation: detail-text .8s cubic-bezier(.22,.7,.25,1) both;
+}
+.detail-credits, .detail-description {
+  position: relative;
+}
+.detail-credits::before, .detail-description::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #8e8f87;
+  transform-origin: left;
+  animation: detail-rule .7s .25s both;
+}
+.detail-credits {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 30px;
+  padding: 22px 0;
+}
+.detail-credits > span {
+  font-size: 16px;
+  animation: detail-text .65s .65s both;
+}
+.detail-credits small {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-right: 8px;
+}
+.detail-description {
+  margin: 0;
+  padding: 22px 20px;
+  font-size: 14px;
+  animation: detail-text .65s .95s both;
+}
+.detail-description::before { animation-delay: .6s; }
+.experiment-detail .worker-page {
+  padding-top: 45px;
+  animation: detail-text .8s 1.2s both;
+}
+@keyframes detail-text {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(16px); }
+  to { opacity: 1; clip-path: inset(0); transform: translateY(0); }
+}
+@keyframes detail-rule {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@media (max-width: 560px) {
+  .detail-header { padding: 115px 16px 0; }
+  .detail-header h1 { font-size: clamp(48px, 12vw, 68px); }
+  .detail-credits { gap: 14px; flex-direction: column; }
+  .detail-credits > span { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experiment-detail * { animation: none !important; }
+}
