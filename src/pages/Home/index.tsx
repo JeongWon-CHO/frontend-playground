@@ -154,7 +154,7 @@ export default function Home() {
         )}
       </nav>
       <main>
-        <section className="collection-info" key={active.id} aria-live="polite">
+        <section className="collection-info" key={`${active.id}-${loading}`} aria-live="polite">
           <h1>{active.tags[0]}</h1>
           <dl>
             <div>
@@ -262,7 +262,8 @@ export default function Home() {
                       viewBox="0 0 600 600"
                       aria-hidden="true"
                     >
-                      <path d="M85 104C175 7 381 -8 489 91S625 330 522 476 296 623 150 541 1 304 45 193 M105 74C226 -22 414 7 509 113S606 343 500 493 277 601 127 523 5 334 25 273" />
+                      <path className="scribble-line" d="M85 104C175 7 381 -8 489 91S625 330 522 476S296 623 150 541S1 304 45 193" />
+                      <path className="scribble-line scribble-line-secondary" d="M105 74C226 -22 414 7 509 113S606 343 500 493S277 601 127 523S5 334 25 273" />
                     </svg>
                   </div>
                 </button>
@@ -270,7 +271,7 @@ export default function Home() {
             );
           })}
         </div>
-        <div className="collection-notes" key={`notes-${active.id}`}>
+        <div className="collection-notes" key={`notes-${active.id}-${loading}`}>
           <div>
             <span className="note-symbol">✳</span>
             <span className="note-label">THE EXPERIMENT</span>
@@ -282,43 +283,11 @@ export default function Home() {
               {active.category.toUpperCase()} / VOL. {active.id}
             </span>
             <p>{active.description}</p>
-            {active.status === "live" ? (
-              <Link
-                className="experiment-open"
-                to={active.path}
-                onClick={remember}
-              >
-                실험 시작하기 ↗
-              </Link>
-            ) : (
+            {active.status === "planned" && (
               <span className="coming-soon">COMING SOON</span>
             )}
           </div>
         </div>
-        <footer className="collection-footer">
-          <span>Frontend Playground</span>
-          <div>
-            <button
-              onClick={() => select(index - 1)}
-              disabled={index === 0}
-              aria-label="이전 CD"
-            >
-              ←
-            </button>
-            <span>
-              {String(index + 1).padStart(2, "0")} /{" "}
-              {String(experiments.length).padStart(2, "0")}
-            </span>
-            <button
-              onClick={() => select(index + 1)}
-              disabled={index === experiments.length - 1}
-              aria-label="다음 CD"
-            >
-              →
-            </button>
-          </div>
-          <span>© 2026</span>
-        </footer>
         {loading && (
           <div
             className="intro-overlay"
