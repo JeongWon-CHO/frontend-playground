@@ -228,6 +228,7 @@ export default function Home() {
                   {
                     "--offset": offset,
                     "--distance": Math.abs(offset),
+                    "--entrance-order": i,
                   } as CSSProperties
                 }
                 aria-hidden={Math.abs(offset) > 1}
@@ -237,56 +238,58 @@ export default function Home() {
                   }
                 }}
               >
-                <button
-                  className="disc-button"
-                  tabIndex={Math.abs(offset) > 1 ? -1 : 0}
-                  aria-label={
-                    offset === 0
-                      ? `${experiment.title} 상세 보기`
-                      : `${offset < 0 ? "이전" : "다음"} 실험: ${experiment.title}`
-                  }
-                  onClick={() => {
-                    if (offset !== 0) select(i);
-                    else if (experiment.status === "live") {
-                      if (openingRef.current) return;
-                      remember();
-                      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                        navigate(experiment.path);
-                        return;
-                      }
-                      openingRef.current = true;
-                      setOpening(true);
-                    } else setPanel("index");
-                  }}
-                  onPointerMove={(e) => {
-                    if (e.pointerType !== "mouse" || openingRef.current) return;
-                    const box = e.currentTarget.getBoundingClientRect();
-                    e.currentTarget.style.setProperty(
-                      "--mx",
-                      `${((e.clientX - box.left) / box.width) * 2 - 1}`,
-                    );
-                    e.currentTarget.style.setProperty(
-                      "--my",
-                      `${((e.clientY - box.top) / box.height) * 2 - 1}`,
-                    );
-                  }}
-                  onPointerLeave={(e) => {
-                    e.currentTarget.style.setProperty("--mx", "0");
-                    e.currentTarget.style.setProperty("--my", "0");
-                  }}
-                >
-                  <div className="disc-motion">
-                    <ExperimentDisc index={i} />
-                    <svg
-                      className="disc-scribble"
-                      viewBox="0 0 600 600"
-                      aria-hidden="true"
-                    >
-                      <path className="scribble-line" d="M85 104C175 7 381 -8 489 91S625 330 522 476S296 623 150 541S1 304 45 193" />
-                      <path className="scribble-line scribble-line-secondary" d="M105 74C226 -22 414 7 509 113S606 343 500 493S277 601 127 523S5 334 25 273" />
-                    </svg>
-                  </div>
-                </button>
+                <div className="disc-entrance" key={`entrance-${loading}`}>
+                  <button
+                    className="disc-button"
+                    tabIndex={Math.abs(offset) > 1 ? -1 : 0}
+                    aria-label={
+                      offset === 0
+                        ? `${experiment.title} 상세 보기`
+                        : `${offset < 0 ? "이전" : "다음"} 실험: ${experiment.title}`
+                    }
+                    onClick={() => {
+                      if (offset !== 0) select(i);
+                      else if (experiment.status === "live") {
+                        if (openingRef.current) return;
+                        remember();
+                        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                          navigate(experiment.path);
+                          return;
+                        }
+                        openingRef.current = true;
+                        setOpening(true);
+                      } else setPanel("index");
+                    }}
+                    onPointerMove={(e) => {
+                      if (e.pointerType !== "mouse" || openingRef.current) return;
+                      const box = e.currentTarget.getBoundingClientRect();
+                      e.currentTarget.style.setProperty(
+                        "--mx",
+                        `${((e.clientX - box.left) / box.width) * 2 - 1}`,
+                      );
+                      e.currentTarget.style.setProperty(
+                        "--my",
+                        `${((e.clientY - box.top) / box.height) * 2 - 1}`,
+                      );
+                    }}
+                    onPointerLeave={(e) => {
+                      e.currentTarget.style.setProperty("--mx", "0");
+                      e.currentTarget.style.setProperty("--my", "0");
+                    }}
+                  >
+                    <div className="disc-motion">
+                      <ExperimentDisc index={i} />
+                      <svg
+                        className="disc-scribble"
+                        viewBox="0 0 600 600"
+                        aria-hidden="true"
+                      >
+                        <path className="scribble-line" d="M85 104C175 7 381 -8 489 91S625 330 522 476S296 623 150 541S1 304 45 193" />
+                        <path className="scribble-line scribble-line-secondary" d="M105 74C226 -22 414 7 509 113S606 343 500 493S277 601 127 523S5 334 25 273" />
+                      </svg>
+                    </div>
+                  </button>
+                </div>
               </div>
             );
           })}

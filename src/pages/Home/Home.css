@@ -722,3 +722,25 @@
   45% { transform: translate(-50%, -42%) scale(1.02); opacity: 1; }
   100% { transform: translate(-50%, 125svh) scale(.85); opacity: 0; }
 }
+
+/* Animate a separate layer so browsing and pointer tilt keep their own transforms. */
+.disc-entrance {
+  width: 100%;
+  height: 100%;
+  animation: disc-arrive .8s cubic-bezier(.16,1,.3,1)
+    calc(.08s + var(--entrance-order) * .16s) backwards;
+}
+.is-loading .disc-entrance,
+.is-opening .disc-entrance {
+  animation: none;
+}
+@keyframes disc-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(65px) rotate(-7deg) scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0) scale(1);
+  }
+}
