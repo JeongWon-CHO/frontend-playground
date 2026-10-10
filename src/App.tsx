@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import Icon from "@/components/Home/Icon";
 import Home from "@/pages/Home";
 import { experiments } from "@/data/experiments";
 import "@/App.css";
@@ -22,7 +23,7 @@ function ExperimentPage({
         className="experiment-back"
         to={`/?${sessionStorage.getItem("playground-search") ?? ""}`}
       >
-        ← Playground
+        <Icon name="arrow-left" size={16} /> Playground
       </Link>
       <header className="detail-header">
         <span className="detail-kicker">PLAYGROUND / EXPERIMENT {experiment.id}</span>
@@ -59,7 +60,7 @@ export default function App() {
           element={
             <div className="route-loading">
               <h1>아직 탐험하지 않은 곳이에요.</h1>
-              <Link to="/">Playground로 돌아가기 ↗</Link>
+              <Link to="/">Playground로 돌아가기 <Icon size={18} /></Link>
             </div>
           }
         />

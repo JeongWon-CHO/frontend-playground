@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { categories, experiments } from "@/data/experiments";
+import Icon from "@/components/Home/Icon";
 import ExperimentDisc from "@/components/Home/ExperimentDisc";
 import "./Home.css";
 export default function Home() {
@@ -135,7 +136,7 @@ export default function Home() {
         </button>
         {loading ? (
           <span>
-            Preparing <span className="loading-spinner" />
+            Preparing <Icon name="loading" size={14} className="loading-spinner" />
           </span>
         ) : (
           <>
@@ -157,7 +158,7 @@ export default function Home() {
               onClick={() => setPanel(panel === "index" ? null : "index")}
             >
               Index{" "}
-              <span className={`chevron ${panel === "index" ? "up" : ""}`} />
+              <Icon name="chevron" size={16} className={`chevron ${panel === "index" ? "up" : ""}`} />
             </button>
           </>
         )}
@@ -186,7 +187,7 @@ export default function Home() {
               <dt>STATUS</dt>
               <dd>
                 {active.status === "live"
-                  ? "Available to explore ↗"
+                  ? <>Available to explore <Icon size={12} /></>
                   : "Work in progress"}
               </dd>
             </div>
@@ -296,12 +297,12 @@ export default function Home() {
         </div>
         <div className="collection-notes" key={`notes-${active.id}-${loading}`}>
           <div>
-            <span className="note-symbol">✳</span>
+            <span className="note-symbol"><Icon name="asterisk" /></span>
             <span className="note-label">THE EXPERIMENT</span>
             <h2>“{active.title}”</h2>
           </div>
           <div>
-            <span className="note-symbol">↗</span>
+            <span className="note-symbol"><Icon /></span>
             <span className="note-label">
               {active.category.toUpperCase()} / VOL. {active.id}
             </span>
@@ -333,7 +334,7 @@ export default function Home() {
                 PLAYGROUND / {panel === "index" ? "THE INDEX" : "ABOUT"}
               </span>
               <button onClick={() => setPanel(null)} aria-label="패널 닫기">
-                Close ×
+                Close <Icon name="close" size={16} />
               </button>
             </div>
             {panel === "about" ? (
@@ -358,7 +359,7 @@ export default function Home() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Follow the exploration on GitHub ↗
+                  Follow the exploration on GitHub <Icon size={16} />
                 </a>
               </div>
             ) : (
@@ -410,7 +411,7 @@ export default function Home() {
                       </button>
                       {e.status === "live" ? (
                         <Link to={e.path} onClick={remember}>
-                          Explore ↗
+                          Explore <Icon size={14} />
                         </Link>
                       ) : (
                         <span className="index-planned">In progress</span>

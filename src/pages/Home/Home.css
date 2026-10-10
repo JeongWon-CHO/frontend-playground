@@ -83,19 +83,10 @@
   left: 50%;
 }
 .chevron {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-right: 1px solid;
-  border-bottom: 1px solid;
-  transform: rotate(45deg);
-  vertical-align: 4px;
-  margin-left: 5px;
+  margin-left: 4px;
+  transition: transform .2s;
 }
-.chevron.up {
-  transform: rotate(225deg);
-  vertical-align: 0;
-}
+.chevron.up { transform: rotate(180deg); }
 .collection-info {
   position: absolute;
   top: 9px;
@@ -268,16 +259,7 @@
 .is-loading .current-disc {
   transform: translate(-50%, -50%) scale(0.8);
 }
-.loading-spinner {
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  border: 1px solid transparent;
-  border-top-color: #111;
-  border-right-color: #111;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
+.loading-spinner { animation: spin .8s linear infinite; }
 .collection-panel {
   position: fixed;
   inset: 70px 0 0;
