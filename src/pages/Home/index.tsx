@@ -14,7 +14,8 @@ export default function Home() {
   );
   const [panel, setPanel] = useState<"index" | "about" | null>(null);
   const [loading, setLoading] = useState(!sessionStorage.getItem("pg-intro"));
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(7);
+  const [introNumber, setIntroNumber] = useState(7);
   const [opening, setOpening] = useState(false);
   const openingRef = useRef(false);
   const stage = useRef<HTMLDivElement>(null);
@@ -74,12 +75,21 @@ export default function Home() {
       if (cancelled) return;
       function tick(now: number) {
         if (!start) start = now;
-        const value = Math.min(
-          100,
-          Math.round(((now - start) / (reduced ? 1 : 1250)) * 100),
-        );
-        setProgress(value);
-        if (value < 100) frame = requestAnimationFrame(tick);
+        const checkpoints = [7, 29, 43, 75, 100];
+        const hold = 220;
+        const travel = 260;
+        const elapsed = now - start;
+        const step = Math.min(4, Math.floor(elapsed / (hold + travel)));
+        const phase = elapsed - step * (hold + travel);
+        const from = checkpoints[step];
+        const to = checkpoints[Math.min(step + 1, 4)];
+        const fraction = Math.min(1, Math.max(0, (phase - hold) / travel));
+        // Pause at each checkpoint, then ease the bar to the next value.
+        const eased = fraction * fraction * (3 - 2 * fraction);
+        setProgress(reduced ? 100 : from + (to - from) * eased);
+        setIntroNumber(reduced ? 100 : phase < hold || step === 4 ? from : to);
+        if (!reduced && elapsed < 4 * (hold + travel) + hold)
+          frame = requestAnimationFrame(tick);
         else {
           sessionStorage.setItem("pg-intro", "1");
           setLoading(false);
@@ -119,7 +129,9 @@ export default function Home() {
     return () => window.removeEventListener("keydown", close);
   }, [panel]);
   return (
-    <div className={`collection ${loading ? "is-loading" : ""} ${opening ? "is-opening" : ""}`}>
+    <div
+      className={`collection ${loading ? "is-loading" : ""} ${opening ? "is-opening" : ""}`}
+    >
       <a className="skip-link" href="#collection-stage">
         실험 컬렉션으로 건너뛰기
       </a>
@@ -136,7 +148,8 @@ export default function Home() {
         </button>
         {loading ? (
           <span>
-            Preparing <Icon name="loading" size={14} className="loading-spinner" />
+            Preparing{" "}
+            <Icon name="loading" size={14} className="loading-spinner" />
           </span>
         ) : (
           <>
@@ -158,13 +171,21 @@ export default function Home() {
               onClick={() => setPanel(panel === "index" ? null : "index")}
             >
               Index{" "}
-              <Icon name="chevron" size={16} className={`chevron ${panel === "index" ? "up" : ""}`} />
+              <Icon
+                name="chevron"
+                size={16}
+                className={`chevron ${panel === "index" ? "up" : ""}`}
+              />
             </button>
           </>
         )}
       </nav>
       <main>
-        <section className="collection-info" key={`${active.id}-${loading}`} aria-live="polite">
+        <section
+          className="collection-info"
+          key={`${active.id}-${loading}`}
+          aria-live="polite"
+        >
           <h1>{active.tags[0]}</h1>
           <dl>
             <div>
@@ -186,9 +207,13 @@ export default function Home() {
             <div className="info-status">
               <dt>STATUS</dt>
               <dd>
-                {active.status === "live"
-                  ? <>Available to explore <Icon size={12} /></>
-                  : "Work in progress"}
+                {active.status === "live" ? (
+                  <>
+                    Available to explore <Icon size={12} />
+                  </>
+                ) : (
+                  "Work in progress"
+                )}
               </dd>
             </div>
           </dl>
@@ -234,7 +259,13 @@ export default function Home() {
                 }
                 aria-hidden={Math.abs(offset) > 1}
                 onAnimationEnd={(event) => {
-                  if (event.target === event.currentTarget && event.animationName === 'disc-open' && openingRef.current && experiment.status === 'live' && offset === 0) {
+                  if (
+                    event.target === event.currentTarget &&
+                    event.animationName === "disc-open" &&
+                    openingRef.current &&
+                    experiment.status === "live" &&
+                    offset === 0
+                  ) {
                     navigate(experiment.path);
                   }
                 }}
@@ -253,7 +284,10 @@ export default function Home() {
                       else if (experiment.status === "live") {
                         if (openingRef.current) return;
                         remember();
-                        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        if (
+                          window.matchMedia("(prefers-reduced-motion: reduce)")
+                            .matches
+                        ) {
                           navigate(experiment.path);
                           return;
                         }
@@ -262,7 +296,8 @@ export default function Home() {
                       } else setPanel("index");
                     }}
                     onPointerMove={(e) => {
-                      if (e.pointerType !== "mouse" || openingRef.current) return;
+                      if (e.pointerType !== "mouse" || openingRef.current)
+                        return;
                       const box = e.currentTarget.getBoundingClientRect();
                       e.currentTarget.style.setProperty(
                         "--mx",
@@ -285,8 +320,14 @@ export default function Home() {
                         viewBox="0 0 600 600"
                         aria-hidden="true"
                       >
-                        <path className="scribble-line" d="M85 104C175 7 381 -8 489 91S625 330 522 476S296 623 150 541S1 304 45 193" />
-                        <path className="scribble-line scribble-line-secondary" d="M105 74C226 -22 414 7 509 113S606 343 500 493S277 601 127 523S5 334 25 273" />
+                        <path
+                          className="scribble-line"
+                          d="M85 104C175 7 381 -8 489 91S625 330 522 476S296 623 150 541S1 304 45 193"
+                        />
+                        <path
+                          className="scribble-line scribble-line-secondary"
+                          d="M105 74C226 -22 414 7 509 113S606 343 500 493S277 601 127 523S5 334 25 273"
+                        />
                       </svg>
                     </div>
                   </button>
@@ -297,12 +338,16 @@ export default function Home() {
         </div>
         <div className="collection-notes" key={`notes-${active.id}-${loading}`}>
           <div>
-            <span className="note-symbol"><Icon name="asterisk" /></span>
+            <span className="note-symbol">
+              <Icon name="asterisk" />
+            </span>
             <span className="note-label">THE EXPERIMENT</span>
             <h2>“{active.title}”</h2>
           </div>
           <div>
-            <span className="note-symbol"><Icon /></span>
+            <span className="note-symbol">
+              <Icon />
+            </span>
             <span className="note-label">
               {active.category.toUpperCase()} / VOL. {active.id}
             </span>
@@ -318,7 +363,18 @@ export default function Home() {
             role="status"
             aria-label="컬렉션 준비 중"
           >
-            <span className="intro-counter">{progress}</span>
+            <div className="intro-loader" aria-hidden="true">
+              <div className="intro-loader-label">
+                <span>PREPARING COLLECTION</span>
+                <span>{introNumber}%</span>
+              </div>
+              <div className="intro-track">
+                <div
+                  className="intro-fill"
+                  style={{ transform: `scaleX(${progress / 100})` }}
+                />
+              </div>
+            </div>
             <span className="intro-left">Frontend Playground</span>
             <span className="intro-right">2026</span>
           </div>
