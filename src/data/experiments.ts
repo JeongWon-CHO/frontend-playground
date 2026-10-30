@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 export const categories = ['All', 'Performance', 'Interaction', 'Graphics', 'Browser', 'Tooling'] as const;
-type Experiment = {
+export type Experiment = {
     id: string;
     title: string;
     description: string;
