@@ -1,3 +1,5 @@
+import "./RenderCard.css";
+import "./RevenueChart.css";
 import { calculateForecast } from "./calculateForecast";
 import { orders, won } from "./orders";
 
@@ -16,7 +18,6 @@ export default function RevenueChart({ samples }: { samples: number }) {
     >
       <div className="render-card-heading">
         <div>
-          <span className="render-eyebrow">THE BIG PICTURE</span>
           <h3 id="revenue-title">월별 예상 매출</h3>
         </div>
         <span className="render-chart-legend">

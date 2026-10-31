@@ -48,3 +48,12 @@ export const totalRevenue = orders.reduce(
 );
 export const won = (value: number) =>
   `₩${Math.round(value).toLocaleString("ko-KR")}`;
+
+export function filterOrders(query: string) {
+  const normalizedQuery = query.trim().toLowerCase();
+  return orders.filter((order) =>
+    `${order.id} ${order.customer} ${order.product} ${order.category}`
+      .toLowerCase()
+      .includes(normalizedQuery),
+  );
+}

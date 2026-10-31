@@ -1,0 +1,118 @@
+.render-chart-legend {
+  font-size: 11px;
+  color: #727867;
+  white-space: nowrap;
+}
+
+.render-chart-legend i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #829468;
+  margin-right: 6px;
+}
+
+.render-chart-total {
+  font-size: 28px;
+  letter-spacing: -1px;
+  margin: 25px 0 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.render-chart-total > span {
+  font-size: 11px;
+  color: #818776;
+  letter-spacing: 0;
+  margin-left: 10px;
+}
+
+.revenue-chart {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(7px, 2vw, 25px);
+}
+
+.revenue-column {
+  min-width: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #7d8572;
+}
+
+.revenue-bar-track {
+  height: 170px;
+  display: flex;
+  align-items: end;
+  border-bottom: 1px solid #d5dacd;
+  margin-bottom: 10px;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 55px,
+    #e5e8de 56px,
+    transparent 57px
+  );
+}
+
+.revenue-bar {
+  width: 100%;
+  position: relative;
+  background: #a5b38c;
+  border-top: 2px solid #718452;
+}
+
+.revenue-column:nth-child(3n) .revenue-bar {
+  background: #7b8e63;
+}
+
+.revenue-bar span {
+  display: none;
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #303a26;
+  color: white;
+  padding: 4px 7px;
+  white-space: nowrap;
+  font-size: 10px;
+  z-index: 1;
+}
+
+.revenue-bar:hover span {
+  display: block;
+}
+
+.render-chart-data {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #68725d;
+}
+
+.render-chart-data summary {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.render-chart-data dl {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.render-chart-data dd {
+  margin: 4px 0 0;
+}
+
+@media (max-width: 700px) {
+  .render-chart-total > span {
+    display: block;
+    margin: 8px 0 0;
+  }
+  .render-chart-legend {
+    font-size: 10px;
+  }
+  .render-chart-data dl {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

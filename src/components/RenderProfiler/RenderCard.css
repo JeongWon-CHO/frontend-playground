@@ -1,0 +1,47 @@
+.render-card {
+  background: #fafaf6;
+  border: 1px solid #d4d7cd;
+  margin-bottom: 24px;
+  padding: 26px;
+}
+
+.render-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.render-card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.render-card h3 small {
+  font-size: 11px;
+  color: #737b65;
+  margin-left: 8px;
+}
+
+.render-card-footnote {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-top: 1px solid #e0e3d9;
+  padding-top: 15px;
+  margin-top: 20px !important;
+  font-size: 10px;
+  color: #727b67;
+}
+
+@media (max-width: 700px) {
+  .render-card {
+    padding: 20px 16px;
+  }
+  .render-card-heading {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

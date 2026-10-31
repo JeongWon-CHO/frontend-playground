@@ -1,0 +1,101 @@
+.render-lab-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.render-lab-intro h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 400;
+  letter-spacing: -2.5px;
+  margin: 16px 0;
+  line-height: 1.05;
+}
+
+.render-lab-intro h2 em {
+  color: #6c7953;
+  font-weight: 400;
+}
+
+.render-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  font-size: 12px;
+}
+
+.render-controls label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.render-controls select {
+  font: inherit;
+  color: inherit;
+  background: #f3f4ed;
+  padding: 8px;
+  border: 1px solid #c6cbbd;
+  border-radius: 4px;
+}
+
+.render-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #d4d7cd;
+  background: #f6f6f1;
+  margin-bottom: 24px;
+}
+
+.render-stats > div {
+  padding: 23px;
+}
+
+.render-stats > div + div {
+  border-left: 1px solid #d4d7cd;
+}
+
+.render-stats span,
+.render-stats small {
+  display: block;
+  font-size: 11px;
+  color: #747a6b;
+}
+
+.render-stats strong {
+  display: block;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin: 14px 0 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.render-stats i {
+  font-size: 14px;
+  font-family: Georgia, serif;
+  color: #808775;
+}
+
+@media (max-width: 700px) {
+  .render-lab-intro {
+    align-items: start;
+    flex-direction: column;
+  }
+  .render-stats {
+    grid-template-columns: 1fr;
+  }
+  .render-stats > div {
+    padding: 18px;
+  }
+  .render-stats > div + div {
+    border-left: 0;
+    border-top: 1px solid #d4d7cd;
+  }
+  .render-stats strong {
+    margin-top: 8px;
+  }
+}

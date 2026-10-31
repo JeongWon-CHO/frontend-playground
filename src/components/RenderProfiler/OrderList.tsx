@@ -1,3 +1,5 @@
+import "./RenderCard.css";
+import "./OrderList.css";
 import type { Order } from "./orders";
 import { won } from "./orders";
 
@@ -12,7 +14,6 @@ export default function OrderList({ orders, query, onQueryChange }: Props) {
     <section className="render-card" aria-labelledby="orders-title">
       <div className="render-card-heading">
         <div>
-          <span className="render-eyebrow">A CLOSER LOOK</span>
           <h3 id="orders-title">
             주문 내역 <small>{orders.length.toLocaleString()}건</small>
           </h3>
