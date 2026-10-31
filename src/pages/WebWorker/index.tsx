@@ -147,8 +147,6 @@ export default function WebWorker() {
       <section className="worker-section">
         <h2>02. CPU Task</h2>
 
-        <label className="limit-label">Prime Number Limit</label>
-
         <input
           className="worker-input"
           type="number"

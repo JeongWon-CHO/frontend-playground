@@ -66,13 +66,6 @@
   border-radius: 10px;
 }
 
-.limit-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
 .worker-buttons {
   display: flex;
   gap: 12px;
