@@ -126,9 +126,8 @@ export default function WebWorker() {
         <h2>01. UI Responsiveness</h2>
 
         <p>
-          아래 공은 requestAnimationFrame으로 움직이고 있습니다.
-          <br />
-          계산 버튼을 누른 뒤 움직임을 확인해 보세요!
+          아래 공은 requestAnimationFrame으로 움직이고 있습니다. 계산 버튼을
+          누른 뒤 움직임을 확인해 보세요!
         </p>
 
         <div className="animation-track">
