@@ -123,7 +123,7 @@ export default function WebWorker() {
   return (
     <main className="worker-page">
       <section className="worker-section">
-        <h2>01. UI Responsiveness</h2>
+        <h2>01. UI 응답성</h2>
 
         <p>
           아래 공은 requestAnimationFrame으로 움직이고 있습니다. 계산 버튼을
@@ -144,7 +144,7 @@ export default function WebWorker() {
       </section>
 
       <section className="worker-section">
-        <h2>02. CPU Task</h2>
+        <h2>02. CPU 연산</h2>
 
         <input
           className="worker-input"
@@ -155,17 +155,17 @@ export default function WebWorker() {
 
         <div className="worker-buttons">
           <button className="worker-button" onClick={runOnMainThread}>
-            Run on Main Thread
+            메인 스레드에서 실행
           </button>
 
           <button className="worker-button" onClick={runOnWorker}>
-            Run on Web Worker
+            웹 워커에서 실행
           </button>
         </div>
       </section>
 
       <section className="worker-section">
-        <h2>03. Result</h2>
+        <h2>03. 실행 결과</h2>
 
         <div className="status-box">
           <span>Status</span>
